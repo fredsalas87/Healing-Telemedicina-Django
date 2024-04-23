@@ -10,11 +10,11 @@ def cadastro_medico(request):
     
     if is_medico(request.user):
         messages.add_message(request, constants.WARNING, 'Você já é médico')
-        return redirect('/medicos/abrir_horario')
+        return redirect('/medicos/abrir_horario', {'is_medico': is_medico(request.user)})
     
     if request.method == "GET":
         especialidades = Especialidades.objects.all()
-        return render(request, 'cadastro_medico.html', {'especialidades': especialidades})
+        return render(request, 'cadastro_medico.html', {'especialidades': especialidades, 'is_medico': is_medico(request.user)})
     elif request.method == "POST":
         crm = request.POST.get('crm')
         nome = request.POST.get('nome')
@@ -49,19 +49,19 @@ def cadastro_medico(request):
         
         messages.add_message(request, constants.SUCCESS, 'Cadastro médico realizado com sucesso!')
         
-        return redirect('/medicos/abrir_horario')
+        return redirect('/medicos/abrir_horario', {'is_medico': is_medico(request.user)})
         
 
 def abrir_horario(request):
 
     if not is_medico(request.user):
         messages.add_message(request, constants.WARNING, 'Somente médicos podem acessar essa página.')
-        return redirect('/usuarios/logout')
+        return redirect('/usuarios/logout', {'is_medico': is_medico(request.user)})
 
     if request.method == "GET":
         dados_medicos = DadosMedico.objects.get(user=request.user)
         datas_abertas = DatasAbertas.objects.filter(user=request.user)
-        return render(request, 'abrir_horario.html', {'dados_medicos': dados_medicos, 'datas_abertas': datas_abertas})
+        return render(request, 'abrir_horario.html', {'dados_medicos': dados_medicos, 'datas_abertas': datas_abertas, 'is_medico': is_medico(request.user)})
     elif request.method == "POST":
         data = request.POST.get('data')
 
@@ -69,7 +69,7 @@ def abrir_horario(request):
         
         if data_formatada <= datetime.now():
             messages.add_message(request, constants.WARNING, 'A data deve ser maior ou igual a data atual.')
-            return redirect('/medicos/abrir_horario')
+            return redirect('/medicos/abrir_horario', {'is_medico': is_medico(request.user)})
 
 
         horario_abrir = DatasAbertas(
@@ -80,12 +80,12 @@ def abrir_horario(request):
         horario_abrir.save()
 
         messages.add_message(request, constants.SUCCESS, 'Horário cadastrado com sucesso.')
-        return redirect('/medicos/abrir_horario')
+        return redirect('/medicos/abrir_horario', {'is_medico': is_medico(request.user)})
     
 def consultas_medico(request):
     if not is_medico(request.user):
         messages.add_message(request, constants.WARNING, 'Somente médicos podem acessar essa página.')
-        return redirect('/usuarios/logout')
+        return redirect('/usuarios/logout', {'is_medico': is_medico(request.user)})
     
     hoje = datetime.now().date()
 

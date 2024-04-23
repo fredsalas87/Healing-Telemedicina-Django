@@ -4,11 +4,12 @@ from django.contrib.auth.models import User
 from django.contrib.messages import constants
 from django.contrib import messages
 from django.contrib import auth
+from medico.models import is_medico
 
 # Create your views here.
 def cadastro(request):
     if request.method == "GET":
-        return render( request, 'cadastro.html')
+        return render( request, 'cadastro.html', {'is_medico': is_medico(request.user)})
     elif request.method == "POST":
         username = request.POST.get('username')
         email = request.POST.get('email')
@@ -17,17 +18,17 @@ def cadastro(request):
         
         if senha != confirmar_senha:
             messages.add_message(request, constants.ERROR, "A senha e confirmar senha devem ser iguais")
-            return redirect('/usuarios/cadastro')
+            return redirect('/usuarios/cadastro', {'is_medico': is_medico(request.user)})
         
         if len(senha) < 6:
             messages.add_message(request, constants.ERROR, "A senha deve ter mais de 5 dígitos")
-            return redirect('/usuarios/cadastro')
+            return redirect('/usuarios/cadastro', {'is_medico': is_medico(request.user)})
         
         users = User.objects.filter(username=username)
         
         if users.exists():
             messages.add_message(request, constants.ERROR, "Já existe um usuário com esse username")
-            return redirect('/usuarios/cadastro')   
+            return redirect('/usuarios/cadastro', {'is_medico': is_medico(request.user)})   
         
         user = User.objects.create_user(
             username=username,
@@ -35,11 +36,11 @@ def cadastro(request):
             password=senha
         )
         
-        return redirect('/usuarios/login')
+        return redirect('/usuarios/login', {'is_medico': is_medico(request.user)})
     
 def login_view(request):
     if request.method == "GET":
-        return render(request, 'login.html')
+        return render(request, 'login.html', {'is_medico': is_medico(request.user)})
     elif request.method == "POST":
         username = request.POST.get('username')
         senha = request.POST.get('senha')
@@ -48,11 +49,11 @@ def login_view(request):
         
         if user:
             auth.login(request, user)
-            return redirect('/pacientes/home')
+            return redirect('/pacientes/home', {'is_medico': is_medico(request.user)})
         
         messages.add_message(request, constants.ERROR, 'Usuário ou senha inválidos')
-        return redirect('/usuarios/login')
+        return redirect('/usuarios/login', {'is_medico': is_medico(request.user)})
     
 def logout(request):
     auth.logout(request)
-    return redirect('/usuarios/login')
+    return redirect('/usuarios/login', {'is_medico': is_medico(request.user)})
