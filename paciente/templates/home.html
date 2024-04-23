@@ -31,7 +31,6 @@
                         </span>
                     {% endfor %}
                     
-
                 </div>
                 <br>
                 <input type="submit" value="filtrar" class="btn btn-success btn-dark-color">
@@ -39,7 +38,7 @@
             <hr>
 
             <div class="list-medicos">
-               {% for medico in medicos %}
+                {% for medico in medicos %}
                 <div class="card-medicos shadow-main-color">
                     <div class="row">
                         <div class="col-md-3"><img src="{{ medico.foto.url }}" class="foto-perfil-card" alt=""></div>
@@ -53,14 +52,13 @@
                         {% if medico.proxima_data %}
                             <strong>{{medico.proxima_data}}</strong>
                         {% else %}
-                            Aguarde uma data.
+                            <strong>Aguarde uma data.</strong>
                         {% endif %}
                         
-                    <a href="#" class="btn btn-success btn-dark-color">Agendar</a>
+                    <a href="{% url 'escolher_horario' medico.id %}" class="btn btn-success btn-dark-color">Agendar</a>
                 </div>
                 <br>
                 {% endfor %}
-
 
             </div>
 
