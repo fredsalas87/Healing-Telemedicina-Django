@@ -47,7 +47,30 @@
                 <tbody>
                     {% for consulta in minhas_consultas  %}
                         <tr>
-                            <td><a href="#">Dr(a). {{ consulta.data_aberta.user }}</a></td>
+                            {% if consulta.status == 'C' %}
+                                <div class="alert alert-danger" role="alert">
+                                    Consulta cancelada
+                                </div>
+                            {% elif consulta.status == 'F' %}
+                                <div class="alert alert-success" role="alert">
+                                    Consulta Finalizada
+                                </div>
+                            {% elif consulta.status == 'I' %}
+                                <div class="alert alert-primary" role="alert">
+                                    Consulta inicializada, acesse o link imediatamente!
+                                </div>
+                            {% endif %}
+
+                            {% if consulta.status == 'F' %}color-dark{% endif %}
+                            
+                            {% if consulta.status == 'I' and consulta.link %}
+                                <a href="{{consulta.link}}"  class="btn btn-success btn-dark-color btn-lg" >Acessar consulta</a>
+                            {% else %}
+
+                                <a href="#"  class="btn btn-success btn-dark-color btn-lg disabled" >Acessar consulta</a>
+
+                            {% endif %}
+                            <td><a href="{% url 'consulta' consulta.id %}">Dr(a). {{ consulta.data_aberta.user }}</a></td>
                             <td>{{ consulta.get_status_display }}</td>
                             <td>{{ consulta.data_aberta.data }}</td>
                         </tr>
